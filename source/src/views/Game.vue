@@ -35,11 +35,34 @@
         <span class="b-progress__indicator"></span>
       </div>
       <div class="b-cards">
-
+        <div v-for="(item, i) in 18" :key="i" class="b-cards__item" @click="open">
+          <span class="b-cards__question"></span>
+          <img class="b-cards__image" :src="require('@/assets/images/'+ 7 +'.jpg')" alt="">
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+
+export default{
+  data() {
+    return {
+
+    }
+  },
+  computed: {
+
+  },
+  methods: {
+    open($event) {
+      $event.target.parentNode.classList.toggle('active')
+    }
+  }
+}
+</script>
+
 
 <style scoped lang="scss">
   .b-game {}
@@ -129,6 +152,57 @@
       top: 50%;
       transform: translateY(-50%);
     }
+  }
+  .b-cards {
+    display: flex;
+    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-gap: 15px;
+    padding-bottom: 100px;
+    &__item {
+      position: relative;
+      width: 100%;
+      padding-bottom: 100%;
+      border-radius: 15px;
+      perspective: 500px;
+      float: left;
+    }
+    &__question {
+      display: block;
+      background: #A1B5D0 url('../assets/images/question.svg') no-repeat center;
+      position:absolute;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      transition: all 0.5s ease-in;
+      color: white;
+      background-color: #A1B5D0;
+      padding: 10px;
+      backface-visibility: hidden;
+      border-radius: 15%;
+      cursor: pointer;
+    }
+    &__image {
+      display: block;
+      position:absolute;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      transition: all 0.5s ease-in;
+      color: white;
+      backface-visibility: hidden;
+    }
+  }
+  .b-cards__item.active .b-cards__question, .b-cards__item.flip .b-cards__question{
+    transform: rotateY(180deg);
+  }
+  .b-cards__item.active .b-cards__image, .b-cards__item.flip .b-cards__image{
+    transform: rotateY(0deg);
+  }
+  .b-cards__item .b-cards__image{
+    transform: rotateY(-180deg);
   }
 
 </style>
