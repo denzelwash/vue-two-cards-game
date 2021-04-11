@@ -5,7 +5,7 @@
         <div class="b-hello">
           <h1>найди пару</h1>
           <p class="b-hello__desc">Правила просты, найди 2 одинаковы карточки.</p>
-          <p class="b-hello__desc">Кто первый малодец, кто последний, тот лох.</p>
+          <p class="b-hello__desc">Кто первый молодец, кто последний, тот лох.</p>
           <button class="btn">Старт</button>
         </div>
         <ul class="b-score">
@@ -35,9 +35,9 @@
         <span class="b-progress__indicator"></span>
       </div>
       <div class="b-cards">
-        <div v-for="(item, i) in 18" :key="i" class="b-cards__item" @click="open">
+        <div v-for="(item, i) in imagesArr" :key="i" class="b-cards__item" @click="open">
           <span class="b-cards__question"></span>
-          <img class="b-cards__image" :src="require('@/assets/images/'+ 7 +'.jpg')" alt="">
+          <img class="b-cards__image" :src="item.src" alt="">
         </div>
       </div>
     </div>
@@ -49,11 +49,50 @@
 export default{
   data() {
     return {
-
+      images: [
+        {
+          src: require('../assets/images/1.jpg'),
+          status: 0
+        },
+        {
+          src: require('../assets/images/2.jpg'),
+          status: 0
+        },
+        {
+          src: require('../assets/images/3.jpg'),
+          status: 0
+        },
+        {
+          src: require('../assets/images/4.jpg'),
+          status: 0
+        },
+        {
+          src: require('../assets/images/5.jpg'),
+          status: 0
+        },
+        {
+          src: require('../assets/images/6.jpg'),
+          status: 0
+        },
+        {
+          src: require('../assets/images/7.jpg'),
+          status: 0
+        },
+        {
+          src: require('../assets/images/8.jpg'),
+          status: 0
+        },
+        {
+          src: require('../assets/images/9.jpg'),
+          status: 0
+        },
+      ]
     }
   },
   computed: {
-
+    imagesArr() {
+      return this.images.concat(this.images)
+    }
   },
   methods: {
     open($event) {
@@ -172,6 +211,7 @@ export default{
     &__question {
       display: block;
       background: #A1B5D0 url('../assets/images/question.svg') no-repeat center;
+      background-size: 50%;
       position:absolute;
       width: 100%;
       height: 100%;
