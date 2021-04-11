@@ -91,7 +91,7 @@ export default{
   },
   computed: {
     imagesArr() {
-      return this.images.concat(this.images)
+      return this.images.concat(this.images).shuffle()
     }
   },
   methods: {
@@ -100,6 +100,17 @@ export default{
     }
   }
 }
+
+Array.prototype.shuffle = function() {
+    for (var i = this.length - 1; i > 0; i--) {
+        var num = Math.floor(Math.random() * (i + 1));
+        var d = this[num];
+        this[num] = this[i];
+        this[i] = d;
+    }
+    return this;
+}
+
 </script>
 
 
