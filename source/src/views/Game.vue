@@ -8,7 +8,7 @@
           <p class="b-hello__desc">Кто первый молодец, кто последний, тот лох.</p>
           <div class="b-hello__controls">
             <transition name="fade" v-on:after-leave="startAfterLeave">
-                <button  v-if="!gameStarted" class="btn" @click="startGame">Старт</button>
+                <button  v-if="!gameStarted && !showTime" class="btn" @click="startGame">Старт</button>
             </transition>
             <span v-if="showTime" class="timer">{{ time }}</span>  
           </div>
@@ -37,13 +37,19 @@
         </ul>
       </div>
       <div class="b-progress">
-        <span class="b-progress__indicator"></span>
+        <span class="b-progress__dot" :style="{left: progress + '%'}"></span>
+        <span class="b-progress__bg" :style="{width: progress + '%'}"></span>
       </div>
-      <div class="b-cards">
-        <div v-for="item in images" :key="item.index" class="b-cards__item" @click="open($event, item.id, item.index)">
-          <span class="b-cards__question">{{item}}</span>
-          <img style="opacity: 0.2;" class="b-cards__image" :src="item.src" alt="">
-          {{item}}
+      <div class="b-cards" :class="{pause, pause: !gameStarted}">
+        <div 
+          v-for="(item, i) in images" 
+          :key="item.index" 
+          class="b-cards__item"
+          :class="{active: item.checked}"
+          @click="open(item.id, i)"
+        >
+          <span class="b-cards__question"></span>
+          <img class="b-cards__image" :src="item.src" alt="">
         </div>
       </div>
     </div>
@@ -55,27 +61,108 @@
 export default{
   data() {
     return {
-      images: [],
+      images: [
+        {
+          id: 1,
+          src: require('../assets/images/1.jpg'),
+          checked: false,
+          complete: false
+        },
+        {
+          id: 2,
+          src: require('../assets/images/2.jpg'),
+          checked: false,
+          complete: false
+        },
+        {
+          id: 3,
+          src: require('../assets/images/3.jpg'),
+          checked: false,
+          complete: false
+        },
+        {
+          id: 4,
+          src: require('../assets/images/4.jpg'),
+          checked: false,
+          complete: false
+        },
+        {
+          id: 5,
+          src: require('../assets/images/5.jpg'),
+          checked: false,
+          complete: false
+        },
+        {
+          id: 6,
+          src: require('../assets/images/6.jpg'),
+          checked: false,
+          complete: false
+        },
+        {
+          id: 7,
+          src: require('../assets/images/7.jpg'),
+          checked: false,
+          complete: false
+        },
+        {
+          id: 8,
+          src: require('../assets/images/8.jpg'),
+          checked: false,
+          complete: false
+        },
+        {
+          id: 9,
+          src: require('../assets/images/9.jpg'),
+          checked: false,
+          complete: false
+        },
+      ],
       gameStarted: false,
+      pause: false,
       showTime: false,
       time: 0,
       timerId: null,
-      firstCardId: 0,
-      firstCardIndex: 0,
-      secondCardId: 0
+      checkedId: null,
+      checkedIndex: null,
+      progress: 0
     }
   },
+  computed: {
+
+  },
   methods: {
-    open($event, id, index) {
-      if(this.firstCardId === 0) {
-        this.firstCardId = id
-        this.firstCardIndex = index
+    open(id, index) {
+      this.pause = true
+      if(this.checkedId === null) {
+        this.checkedId = id
+        this.checkedIndex = index
         this.images[index].checked = true
+        setTimeout(() => {
+          this.pause = false
+        }, 300)
+      } else {
+        this.images[index].checked = true
+        if(this.checkedId !== this.images[index].id) {
+          setTimeout(() => {
+            this.images[index].checked = false
+            this.images[this.checkedIndex].checked = false
+            this.checkedId = null
+            this.checkedIndex = null
+          }, 300)
+        } else {
+          setTimeout(() => {
+            this.images[index].complete = true
+            this.images[this.checkedIndex].complete = true
+            this.checkedId = null
+            this.checkedIndex = null
+            this.progress += 100 / (this.images.length / 2)
+            console.log(this.progress)
+          }, 300)
+        }
+        setTimeout(() => {
+          this.pause = false
+        }, 600)
       }
-      if(this.secondCardId === 0 && this.secondCardId !== this.firstCardId) {
-        this.images[this.firstCardIndex].checked = false
-      }
-      $event.target.parentNode.classList.toggle('active')
     },
     startGame() {
       this.gameStarted = true
@@ -85,73 +172,19 @@ export default{
       this.showTime = true
     }
   },
+  watch: {
+    progress() {
+      if(this.progress >= 100) {
+        this.gameStarted = false
+        this.pause = false
+        clearInterval(this.timerId)
+      }
+    }
+  },
   beforeMount() {
-    let images = imagesArr
-    images = images.concat(images.map((item) => ({...item}))).shuffle()
-    images.forEach((item, i) => {
-      item.index = ++i
-    })
-    this.images = images
+    this.images = this.images.concat(this.images.map((item) => ({...item}))).shuffle()
   }
-  
 }
-
-const imagesArr = [
-  {
-    id: 1,
-    src: require('../assets/images/1.jpg'),
-    checked: false,
-    complete: false
-  },
-  {
-    id: 2,
-    src: require('../assets/images/2.jpg'),
-    checked: false,
-    complete: false
-  },
-  {
-    id: 3,
-    src: require('../assets/images/3.jpg'),
-    checked: false,
-    complete: false
-  },
-  {
-    id: 4,
-    src: require('../assets/images/4.jpg'),
-    checked: false,
-    complete: false
-  },
-  {
-    id: 5,
-    src: require('../assets/images/5.jpg'),
-    checked: false,
-    complete: false
-  },
-  {
-    id: 6,
-    src: require('../assets/images/6.jpg'),
-    checked: false,
-    complete: false
-  },
-  {
-    id: 7,
-    src: require('../assets/images/7.jpg'),
-    checked: false,
-    complete: false
-  },
-  {
-    id: 8,
-    src: require('../assets/images/8.jpg'),
-    checked: false,
-    complete: false
-  },
-  {
-    id: 9,
-    src: require('../assets/images/9.jpg'),
-    checked: false,
-    complete: false
-  },
-]
 
 Array.prototype.shuffle = function() {
   for (var i = this.length - 1; i > 0; i--) {
@@ -167,6 +200,9 @@ Array.prototype.shuffle = function() {
 
 
 <style scoped lang="scss">
+
+$time: 0.3s;
+
 .b-game {}
 
 .b-top {
@@ -274,16 +310,30 @@ p {
   position: relative;
   margin-bottom: 44px;
   width: 100%;
-  height: 2px;
+  height: 4px;
   background-color: #F0F0F0;
-  span {
+  border-radius: 4px;
+  &__dot {
     position: absolute;
     width: 10px;
     height: 10px;
     background-color: #83CB53;
     border-radius: 50%;
     top: 50%;
+    transition: all 1s;
     transform: translateY(-50%);
+    z-index: 2;
+  }
+  &__bg {
+    position: absolute;
+    width: 0%;
+    height: 4px;
+    background-color: #83CB53;
+    transition: all 1s;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    z-index: 1;
+
   }
 }
 .b-cards {
@@ -310,7 +360,7 @@ p {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    transition: all 0.5s ease-in;
+    transition: all $time ease-in;
     color: white;
     background-color: #A1B5D0;
     padding: 10px;
@@ -324,10 +374,18 @@ p {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    transition: all 0.5s ease-in;
+    transition: all $time ease-in;
     color: white;
     backface-visibility: hidden;
   }
+}
+
+.b-cards.pause {
+  pointer-events: none;
+}
+
+.b-cards__item.active {
+  pointer-events: none;
 }
 
 .b-cards__item.active .b-cards__question, .b-cards__item.flip .b-cards__question{
