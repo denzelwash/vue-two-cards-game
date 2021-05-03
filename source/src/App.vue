@@ -4,6 +4,17 @@
   </div>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      gameStarted: false
+    }
+  }
+}
+</script>
+
+
 <style lang="scss">
 
 </style>
