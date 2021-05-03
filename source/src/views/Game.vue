@@ -40,9 +40,10 @@
         <span class="b-progress__indicator"></span>
       </div>
       <div class="b-cards">
-        <div v-for="(item, i) in imagesArr" :key="i" class="b-cards__item" @click="open">
+        <div v-for="item in images" :key="item.index" class="b-cards__item" @click="open($event, item.id, item.index)">
           <span class="b-cards__question">{{item}}</span>
-          <img class="b-cards__image" :src="item.src" alt="">
+          <img style="opacity: 0.2;" class="b-cards__image" :src="item.src" alt="">
+          {{item}}
         </div>
       </div>
     </div>
@@ -54,75 +55,26 @@
 export default{
   data() {
     return {
-      images: [
-        {
-          id: 1,
-          src: require('../assets/images/1.jpg'),
-          checked: false,
-          complete: false
-        },
-        {
-          id: 2,
-          src: require('../assets/images/2.jpg'),
-          checked: false,
-          complete: false
-        },
-        {
-          id: 3,
-          src: require('../assets/images/3.jpg'),
-          checked: false,
-          complete: false
-        },
-        {
-          id: 4,
-          src: require('../assets/images/4.jpg'),
-          checked: false,
-          complete: false
-        },
-        {
-          id: 5,
-          src: require('../assets/images/5.jpg'),
-          checked: false,
-          complete: false
-        },
-        {
-          id: 6,
-          src: require('../assets/images/6.jpg'),
-          checked: false,
-          complete: false
-        },
-        {
-          id: 7,
-          src: require('../assets/images/7.jpg'),
-          checked: false,
-          complete: false
-        },
-        {
-          id: 8,
-          src: require('../assets/images/8.jpg'),
-          checked: false,
-          complete: false
-        },
-        {
-          id: 9,
-          src: require('../assets/images/9.jpg'),
-          checked: false,
-          complete: false
-        },
-      ],
+      images: [],
       gameStarted: false,
       showTime: false,
       time: 0,
-      timerId: null
-    }
-  },
-  computed: {
-    imagesArr() {
-      return this.images.concat(this.images).shuffle()
+      timerId: null,
+      firstCardId: 0,
+      firstCardIndex: 0,
+      secondCardId: 0
     }
   },
   methods: {
-    open($event) {
+    open($event, id, index) {
+      if(this.firstCardId === 0) {
+        this.firstCardId = id
+        this.firstCardIndex = index
+        this.images[index].checked = true
+      }
+      if(this.secondCardId === 0 && this.secondCardId !== this.firstCardId) {
+        this.images[this.firstCardIndex].checked = false
+      }
       $event.target.parentNode.classList.toggle('active')
     },
     startGame() {
@@ -133,17 +85,82 @@ export default{
       this.showTime = true
     }
   },
+  beforeMount() {
+    let images = imagesArr
+    images = images.concat(images.map((item) => ({...item})))
+    images.forEach((item, i) => {
+      item.index = i
+    })
+    this.images = images
+  }
   
 }
 
+const imagesArr = [
+  {
+    id: 1,
+    src: require('../assets/images/1.jpg'),
+    checked: false,
+    complete: false
+  },
+  {
+    id: 2,
+    src: require('../assets/images/2.jpg'),
+    checked: false,
+    complete: false
+  },
+  {
+    id: 3,
+    src: require('../assets/images/3.jpg'),
+    checked: false,
+    complete: false
+  },
+  {
+    id: 4,
+    src: require('../assets/images/4.jpg'),
+    checked: false,
+    complete: false
+  },
+  {
+    id: 5,
+    src: require('../assets/images/5.jpg'),
+    checked: false,
+    complete: false
+  },
+  {
+    id: 6,
+    src: require('../assets/images/6.jpg'),
+    checked: false,
+    complete: false
+  },
+  {
+    id: 7,
+    src: require('../assets/images/7.jpg'),
+    checked: false,
+    complete: false
+  },
+  {
+    id: 8,
+    src: require('../assets/images/8.jpg'),
+    checked: false,
+    complete: false
+  },
+  {
+    id: 9,
+    src: require('../assets/images/9.jpg'),
+    checked: false,
+    complete: false
+  },
+]
+
 Array.prototype.shuffle = function() {
-    for (var i = this.length - 1; i > 0; i--) {
-        var num = Math.floor(Math.random() * (i + 1));
-        var d = this[num];
-        this[num] = this[i];
-        this[i] = d;
-    }
-    return this;
+  for (var i = this.length - 1; i > 0; i--) {
+      var num = Math.floor(Math.random() * (i + 1));
+      var d = this[num];
+      this[num] = this[i];
+      this[i] = d;
+  }
+  return this;
 }
 
 </script>
