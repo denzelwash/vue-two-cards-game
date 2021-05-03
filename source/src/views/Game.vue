@@ -87,9 +87,9 @@ export default{
   },
   beforeMount() {
     let images = imagesArr
-    images = images.concat(images.map((item) => ({...item})))
+    images = images.concat(images.map((item) => ({...item}))).shuffle()
     images.forEach((item, i) => {
-      item.index = i
+      item.index = ++i
     })
     this.images = images
   }
