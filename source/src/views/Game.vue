@@ -14,6 +14,7 @@
           </div>
         </div>
         <ul class="b-score">
+          {{ results }}
           <li class="b-score__item">
             <b>1.</b>
             <span>Конечно же я</span>
@@ -124,11 +125,12 @@ export default{
       timerId: null,
       checkedId: null,
       checkedIndex: null,
-      progress: 0
+      progress: 0,
+      results: []
     }
   },
   computed: {
-
+    
   },
   methods: {
     open(id, index) {
@@ -181,8 +183,15 @@ export default{
       }
     }
   },
-  beforeMount() {
+  async beforeMount() {
     this.images = this.images.concat(this.images.map((item) => ({...item}))).shuffle()
+    try {
+      const response = await fetch('http://1vue-two-cards/api/getResults.php')
+      this.results = await response.json()
+    } catch(e) {
+      console.error(e)
+    }
+    
   }
 }
 
