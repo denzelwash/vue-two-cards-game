@@ -7,35 +7,27 @@
           <p class="b-hello__desc">Правила просты, найди 2 одинаковы карточки.</p>
           <p class="b-hello__desc">Кто первый молодец, кто последний, тот лох.</p>
           <div class="b-hello__controls">
-            <transition name="fade" v-on:after-leave="startAfterLeave">
-                <button  v-if="!gameStarted && !showTime" class="btn" @click="startGame">Старт</button>
-            </transition>
-            <span v-if="showTime" class="timer">{{ time }}</span>  
+            <transition name="fade" mode="out-in">
+                <button  v-if="!gameStarted && progress === 0" class="btn" @click="startGame">Старт</button>
+                <span v-else class="timer">{{ time }}</span> 
+            </transition> 
           </div>
         </div>
-        <ul class="b-score">
-          {{ results }}
-          <li class="b-score__item">
-            <b>1.</b>
-            <span>Конечно же я</span>
-            <span class="b-score__time">2:43</span>
-          </li>
-          <li class="b-score__item">
-            <b>2.</b>
-            <span>Люба</span>
-            <span class="b-score__time">3:05</span>
-          </li>
-          <li class="b-score__item">
-            <b>3.</b>
-            <span>Коля Иванов</span>
-            <span class="b-score__time">15:43</span>
-          </li>
-          <li class="b-score__item">
-            <b>4.</b>
-            <span>Степан Петров</span>
-            <span class="b-score__time">20:43</span>
-          </li>
-        </ul>
+        <div class="b-score">
+          <transition name="fade" mode="out-in">
+            <ul v-if="resultsLength" class="b-score__list">
+              <li class="b-score__item"
+                v-for="(item, i) in results"
+                :key="item.id_result"
+              >
+                <b>{{ i + 1}}.</b>
+                <span>{{ item.name }}</span>
+                <span class="b-score__time">{{ item.time }} сек.</span>
+              </li>
+            </ul>
+            <Loader v-else/>
+          </transition>
+        </div>
       </div>
       <div class="b-progress">
         <span class="b-progress__dot" :style="{left: progress + '%'}"></span>
@@ -58,8 +50,12 @@
 </template>
 
 <script>
+import Loader from '@/components/Loader.vue'
 
-export default{
+export default {
+  components: {
+    Loader
+  },
   data() {
     return {
       images: [
@@ -120,7 +116,6 @@ export default{
       ],
       gameStarted: false,
       pause: false,
-      showTime: false,
       time: 0,
       timerId: null,
       checkedId: null,
@@ -130,7 +125,9 @@ export default{
     }
   },
   computed: {
-    
+    resultsLength() {
+      return this.results.length
+    }
   },
   methods: {
     open(id, index) {
@@ -169,9 +166,6 @@ export default{
     startGame() {
       this.gameStarted = true
       this.timerId = setInterval(() => this.time++, 1000)
-    },
-    startAfterLeave() {
-      this.showTime = true
     }
   },
   watch: {
@@ -292,12 +286,21 @@ p {
   }
 }
 .b-score {
-  padding-top: 42px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  display: flex;
   width: 100%;
   max-width: 310px;
+  height: 168px;
+  .lds-roller {
+    align-self: center;
+  }
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+  }
   &__item {
     border: 1px solid #CCCCCC;
     border-radius: 6px;
@@ -410,10 +413,10 @@ p {
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .3s;
+  transition: opacity .5s ease;
 }
 
-.fade-enter, .fade-leave-to {
+.fade-enter-from, .fade-leave-to {
   opacity: 0;
 }
 
