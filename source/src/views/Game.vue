@@ -9,8 +9,14 @@
           <div class="b-hello__controls">
             <transition name="fade" mode="out-in">
                 <button  v-if="!gameStarted && progress === 0" class="btn" @click="startGame">Старт</button>
-                <span v-else class="timer">{{ time }}</span> 
-            </transition> 
+                <span v-else class="timer">{{ time }}</span>
+            </transition>
+            <transition name="fade">
+              <div v-if="gameСomplete" class="b-hello__complete-btns">
+                <button class="btn" @click="repeatGame">Заново</button>
+                <button class="btn">Сохранить</button>
+              </div>
+            </transition>
           </div>
         </div>
         <div class="b-score">
@@ -129,7 +135,7 @@ export default {
       return this.results.length
     },
     gameСomplete() {
-      return progress >= 100
+      return this.progress >= 100
     }
   },
   methods: {
@@ -165,19 +171,30 @@ export default {
     startGame() {
       this.gameStarted = true
       this.timerId = setInterval(() => this.time++, 1000)
+    },
+    repeatGame() {
+      this.time = 0
+      this.timerId = null
+      this.checkedId = null
+      this.checkedIndex = null
+      this.progress = 0
+      this.images.forEach((item) => {
+        item.checked = false
+        item.complete = false
+      })
+      this.images = this.images.shuffle()
     }
   },
   watch: {
     progress() {
-      if(gameСomplete) {
+      if(this.gameСomplete) {
         this.gameStarted = false
-        // this.pause = false
         clearInterval(this.timerId)
       }
     }
   },
   async beforeMount() {
-    this.images = this.images.concat(this.images.map((item) => ({...item}))).shuffle()
+    this.images = this.images.concat(this.images.map((item) => ({...item})))
     try {
       const response = await fetch('http://1vue-two-cards/api/getResults.php')
       this.results = await response.json()
@@ -201,222 +218,6 @@ Array.prototype.shuffle = function() {
 </script>
 
 
-<style scoped lang="scss">
-
-$time: 0.3s;
-
-.b-game {}
-
-.b-top {
-  padding-top: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 44px;
-}
-
-.b-hello {
-  &__controls {
-    margin-top: 1.5rem;
-  }
-}
-
-h1 {
-  position: relative;
-  padding-left: 26px;
-  font-weight: 700;
-  font-size: 36px;
-  text-transform: uppercase;
-  color: #83CB53;
-  margin-bottom: 18px;
-  transition: all 0.3s;
-  &.active {
-    color: #FF9800;
-  }
-  &.active::before {
-    background-color: #FF9800;
-  }
-
-  &::before {
-    position: absolute;
-    content: '';
-    width: 10px;
-    height: 50px;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #A1B5D0;
-    border-radius: 6px;
-    transition: all .3s;
-  }
-}
-p {
-  font-size: 18px;
-  margin-bottom: 0;
-}
-.timer {  
-  color: #FF9800;
-  display: block;
-  height: 46px;
-  font-weight: 600;
-  line-height: 46px;
-  font-size: 32px;
-  color: #444444;
-  width: 100%;
-  outline: none;
-  transition: all 0.3s;
-}
-.btn {
-  background: #FFFFFF;
-  border: 2px solid #A1B5D0;
-  border-radius: 40px;
-  height: 46px;
-  font-weight: 600;
-  font-size: 18px;
-  color: #83CB53;
-  width: 100%;
-  max-width: 191px;
-  outline: none;
-  transition: all .3s;
-  &:hover {
-    background: #83CB53;
-    color: #fff;
-    border-color: #83CB53;
-  }
-}
-.b-score {
-  display: flex;
-  width: 100%;
-  max-width: 310px;
-  height: 168px;
-  .lds-roller {
-    align-self: center;
-  }
-  &__list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-  }
-  &__item {
-    border: 1px solid #CCCCCC;
-    border-radius: 6px;
-    padding: 8px 16px;
-    margin-bottom: 8px;
-    display: flex;
-    &:last-child {
-      margin-bottom: 0;
-    }
-    b {
-      margin-right: 6px;
-    }
-  }
-  &__time {
-    margin-left: auto;
-  }
-}
-.b-progress {
-  position: relative;
-  margin-bottom: 44px;
-  width: 100%;
-  height: 4px;
-  background-color: #F0F0F0;
-  border-radius: 4px;
-  &__dot {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: #83CB53;
-    border-radius: 50%;
-    top: 50%;
-    transition: all 1s;
-    transform: translateY(-50%);
-    z-index: 2;
-  }
-  &__bg {
-    position: absolute;
-    width: 0%;
-    height: 4px;
-    background-color: #83CB53;
-    transition: all 1s;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    z-index: 1;
-
-  }
-}
-.b-cards {
-  display: flex;
-  flex-wrap: wrap;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto auto;
-  grid-gap: 15px;
-  padding-bottom: 100px;
-  &__item {
-    position: relative;
-    width: 100%;
-    padding-bottom: 100%;
-    border-radius: 15px;
-    perspective: 500px;
-    float: left;
-  }
-  &__question {
-    display: block;
-    background: #A1B5D0 url('../assets/images/question.svg') no-repeat center;
-    background-size: 50%;
-    position:absolute;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    transition: all $time ease-in;
-    color: white;
-    background-color: #A1B5D0;
-    padding: 10px;
-    backface-visibility: hidden;
-    border-radius: 15%;
-    cursor: pointer;
-  }
-  &__image {
-    display: block;
-    position:absolute;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    transition: all $time ease-in;
-    color: white;
-    backface-visibility: hidden;
-  }
-}
-
-.b-cards.pause {
-  pointer-events: none;
-}
-
-.b-cards__item.active {
-  pointer-events: none;
-}
-
-.b-cards__item.active .b-cards__question, .b-cards__item.flip .b-cards__question{
-  transform: rotateY(180deg);
-}
-
-.b-cards__item.active .b-cards__image, .b-cards__item.flip .b-cards__image{
-  transform: rotateY(0deg);
-}
-
-.b-cards__item .b-cards__image{
-  transform: rotateY(-180deg);
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s ease;
-}
-
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
+<style lang="scss">
 
 </style>

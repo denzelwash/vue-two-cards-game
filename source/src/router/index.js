@@ -1,11 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Game from '../views/Game.vue'
+import Form from '../views/Form.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Game',
     component: Game
+  },
+  {
+    path: '/form',
+    name: 'Form',
+    component: Form
+  },
+  { path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ]
 
