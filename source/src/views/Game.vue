@@ -33,13 +33,13 @@
         <span class="b-progress__dot" :style="{left: progress + '%'}"></span>
         <span class="b-progress__bg" :style="{width: progress + '%'}"></span>
       </div>
-      <div class="b-cards" :class="{pause, pause: !gameStarted}">
+      <div class="b-cards" :class="{pause}">
         <div 
           v-for="(item, i) in images" 
           :key="item.index" 
           class="b-cards__item"
           :class="{active: item.checked}"
-          @click="open(item.id, i)"
+          @click="openCard(item.id, i)"
         >
           <span class="b-cards__question"></span>
           <img class="b-cards__image" :src="item.src" alt="">
@@ -127,19 +127,20 @@ export default {
   computed: {
     resultsLength() {
       return this.results.length
+    },
+    gameСomplete() {
+      return progress >= 100
     }
   },
   methods: {
-    open(id, index) {
-      this.pause = true
+    openCard(id, index) {
+      if (!this.gameStarted) return
       if(this.checkedId === null) {
         this.checkedId = id
         this.checkedIndex = index
         this.images[index].checked = true
-        setTimeout(() => {
-          this.pause = false
-        }, 300)
       } else {
+        this.pause = true
         this.images[index].checked = true
         if(this.checkedId !== this.images[index].id) {
           setTimeout(() => {
@@ -147,7 +148,8 @@ export default {
             this.images[this.checkedIndex].checked = false
             this.checkedId = null
             this.checkedIndex = null
-          }, 300)
+            this.pause = false
+          }, 600)
         } else {
           setTimeout(() => {
             this.images[index].complete = true
@@ -155,12 +157,9 @@ export default {
             this.checkedId = null
             this.checkedIndex = null
             this.progress += 100 / (this.images.length / 2)
-            console.log(this.progress)
+            this.pause = false
           }, 300)
         }
-        setTimeout(() => {
-          this.pause = false
-        }, 600)
       }
     },
     startGame() {
@@ -170,9 +169,9 @@ export default {
   },
   watch: {
     progress() {
-      if(this.progress >= 100) {
+      if(gameСomplete) {
         this.gameStarted = false
-        this.pause = false
+        // this.pause = false
         clearInterval(this.timerId)
       }
     }
