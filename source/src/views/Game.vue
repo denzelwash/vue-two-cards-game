@@ -14,23 +14,31 @@
             <transition name="fade">
               <div v-if="gameСomplete" class="b-hello__complete-btns">
                 <button class="btn" @click="repeatGame">Заново</button>
-                <button class="btn">Сохранить</button>
+                <router-link
+                  custom
+                  :to="{name: 'Form', params: {complete: true, time}}"
+                  v-slot="{navigate}"
+                >
+                  <button class="btn" @click="navigate">Сохранить</button>
+                </router-link>
               </div>
             </transition>
           </div>
         </div>
         <div class="b-score">
           <transition name="fade" mode="out-in">
-            <ul v-if="resultsLength" class="b-score__list">
+            <ul v-if="resultsLength > 0" class="b-score__list">
               <li class="b-score__item"
                 v-for="(item, i) in results"
                 :key="item.id_result"
+                :class="{active: item.id_result === $route.query.recordId}"
               >
                 <b>{{ i + 1}}.</b>
                 <span>{{ item.name }}</span>
                 <span class="b-score__time">{{ item.time }} сек.</span>
               </li>
             </ul>
+            <p v-else-if="resultsLength === 0" class="b-score__empty">Записей нет</p>
             <Loader v-else/>
           </transition>
         </div>
@@ -127,7 +135,7 @@ export default {
       checkedId: null,
       checkedIndex: null,
       progress: 0,
-      results: []
+      results: false
     }
   },
   computed: {
@@ -194,14 +202,16 @@ export default {
     }
   },
   async beforeMount() {
-    this.images = this.images.concat(this.images.map((item) => ({...item})))
+    this.images = this.images.concat(this.images.map((item) => ({...item}))).shuffle()
     try {
       const response = await fetch('http://1vue-two-cards/api/getResults.php')
-      this.results = await response.json()
+      let results = await response.json()
+      this.results = results.sort((a, b) => {
+        return +a.time - +b.time
+      })
     } catch(e) {
       console.error(e)
     }
-    
   }
 }
 

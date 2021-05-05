@@ -185,6 +185,15 @@ p {
 		align-self: center;
 	}
 
+	&__empty {
+		align-self: center;
+    display: block;
+    text-align: center;
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: 600;
+	}
+
 	&__list {
 		margin: 0;
 		padding: 0;
@@ -200,6 +209,11 @@ p {
 		padding: 8px 16px;
 		margin-bottom: 8px;
 		display: flex;
+		&.active {
+			background: #83cb53;
+			color: #fff;
+			border-color: #83cb53;
+		}
 
 		&:last-child {
 			margin-bottom: 0;
