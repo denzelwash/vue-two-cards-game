@@ -1,29 +1,11 @@
 <template>
-  <div class="b-game">
-    <div class="container">
+  <div class="container">
+    <div class="b-game">
       <div class="b-top">
-        <div class="b-hello">
+        <div class="b-text">
           <h1 :class="{active: gameStarted}">найди пару</h1>
-          <p class="b-hello__desc">Правила просты, найди 2 одинаковы карточки.</p>
-          <p class="b-hello__desc">Кто первый молодец, кто последний, тот лох.</p>
-          <div class="b-hello__controls">
-            <transition name="fade" mode="out-in">
-                <button  v-if="!gameStarted && progress === 0" class="btn" @click="startGame">Старт</button>
-                <span v-else class="timer">{{ time }}</span>
-            </transition>
-            <transition name="fade">
-              <div v-if="gameСomplete" class="b-hello__complete-btns">
-                <button class="btn" @click="repeatGame">Заново</button>
-                <router-link
-                  custom
-                  :to="{name: 'Form', params: {complete: true, time}}"
-                  v-slot="{navigate}"
-                >
-                  <button class="btn" @click="navigate">Сохранить</button>
-                </router-link>
-              </div>
-            </transition>
-          </div>
+          <p class="b-text__desc">Правила просты, найди 2 одинаковых карточки.</p>
+          <p class="b-text__desc">Кто первый молодец, кто последний, тот лох.</p>
         </div>
         <div class="b-score">
           <transition name="fade" mode="out-in">
@@ -43,9 +25,27 @@
           </transition>
         </div>
       </div>
+      <div class="b-controls">
+        <transition name="fade" mode="out-in">
+            <button  v-if="!gameStarted && progress === 0" class="btn" @click="startGame">Старт</button>
+            <span v-else class="timer">{{ time }}</span>
+        </transition>
+        <transition name="fade">
+          <div v-if="gameСomplete" class="b-controls__complete-btns">
+            <button class="btn" @click="repeatGame">Заново</button>
+            <router-link
+              custom
+              :to="{name: 'Form', params: {complete: true, time}}"
+              v-slot="{navigate}"
+            >
+              <button class="btn" @click="navigate">Сохранить</button>
+            </router-link>
+          </div>
+        </transition>
+      </div>
       <div class="b-progress">
-        <span class="b-progress__dot" :style="{left: progress + '%'}"></span>
-        <span class="b-progress__bg" :style="{width: progress + '%'}"></span>
+        <span class="b-progress__dot" :style="{left: progressWidth}"></span>
+        <span class="b-progress__bg" :style="{width: progressWidth}"></span>
       </div>
       <div class="b-cards" :class="{pause}">
         <div 
@@ -144,6 +144,9 @@ export default {
     },
     gameСomplete() {
       return this.progress >= 100
+    },
+    progressWidth() {
+      return this.progress === 0 ? '0%' : `calc(${this.progress}% - 10px)`
     }
   },
   methods: {
