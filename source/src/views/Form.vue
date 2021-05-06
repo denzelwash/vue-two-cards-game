@@ -40,7 +40,8 @@
       async submit() {
         this.loading = true
         try {
-          const response = await fetch('http://1vue-two-cards/api/addResult.php', {
+          const src = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://1vue-two-cards/'
+          const response = await fetch(src + 'api/addResult.php', {
             method: 'POST',
             body: JSON.stringify({
               name: this.name,

@@ -21,6 +21,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
+  base: process.env.NODE_ENV === 'production' ? '/vuetwocards/' : process.env.BASE_URL,
   routes
 })
 

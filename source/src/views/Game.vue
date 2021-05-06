@@ -204,7 +204,8 @@ export default {
   async beforeMount() {
     this.images = this.images.concat(this.images.map((item) => ({...item}))).shuffle()
     try {
-      const response = await fetch('http://1vue-two-cards/api/getResults.php')
+      const src = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://1vue-two-cards/'
+      const response = await fetch(src + 'api/getResults.php')
       let results = await response.json()
       this.results = results.sort((a, b) => {
         return +a.time - +b.time
