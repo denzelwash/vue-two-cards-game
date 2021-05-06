@@ -6,5 +6,6 @@ module.exports = {
           args[0].title = "Найди пару";
           return args;
       })
-  }
+  },
+  publicPath: process.env.NODE_ENV === 'production' ? '/vuetwocards/' : '/'
 }
